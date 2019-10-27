@@ -18,44 +18,29 @@ class CoffeeReviewSpider(Spider):
         # last number page number to compute the total number of pages.
         result_urls = ['https://www.coffeereview.com/advanced-search/?keyword=&search=Search+Now&pg={}'.format(x) for x in range(1,270)]
 
-        print(len(result_urls))
-
-        print(result_urls[0])
-
-        print(result_urls[1])
-
-        print('~'*100)
-
-        for url in result_urls[:50]:    # increasing limit to test further urls
+        for url in result_urls:    
             yield Request(url=url, callback=self.parse_result_page)
 
 
     # Scrapy will use the following method to parse each of the review pages
     def parse_result_page(self, response):
 
-        print('=' * 40)
         review_urls = response.xpath('//div[@class="review type-review status-publish hentry pmpro-has-access"]//h3/a/@href').extract()
-        print(len(review_urls))
-        # print(review_urls[0])
-        print('=' * 40)
+        
+        # print(len(review_urls))
+        # print('=' * 40)
 
         # Prepare list of all complete review url per page:
         review_urls = ['https://www.coffeereview.com' + url + '/' for url in review_urls]
-        print(len(review_urls))
-        print('*' * 60)
+
 
         for url in review_urls:
-            # print('='*70)
-            # print('====  Entered Loop of review_urls ==== ')
-            # print('='*70)
+
             yield Request(url=url, callback=self.parse_review_detail_page)
 
 
     # Scrapy will use the following method to parse the review details page
     def parse_review_detail_page(self, response):
-
-        # print('####  Entered parse_review_detail_page #### ')
-        print('='* 150)
 
         # Review Rating: 
         review_rating = response.xpath('//div[@class="review-rating"]/text()').extract_first()
@@ -104,12 +89,13 @@ class CoffeeReviewSpider(Spider):
                 est_price_currency = 'USD'
 
         except:
-            est_price_full = 'ZZZZZZZZ'                    # !!! revert to ---> ''
-            est_price_components = 'ZZZZZZZZ'              # !!! revert to ---> ''
-            est_price = -1111                              # !!! revert to ---> -1
-            est_price_amount_per_measure = -111111         # !!! revert to ---> -1
-            est_price_units = 'ZZZZZZZZ'                   # !!! revert to ---> ''
-            est_price_currency = 'ZZZZZZZZ'                # !!! revert to ---> ''
+            # revert to ---> '' and -1 after testing:
+            est_price_full = 'ZZZZZZZZ'                    
+            est_price_components = 'ZZZZZZZZ'              
+            est_price = -1111                              
+            est_price_amount_per_measure = -111111         
+            est_price_units = 'ZZZZZZZZ'                   
+            est_price_currency = 'ZZZZZZZZ'                
 
 
         review_date_full = response.xpath('//div[@class="review-col2"]//p[1]/strong/text()').extract_first()
@@ -122,12 +108,8 @@ class CoffeeReviewSpider(Spider):
         flavor = int(response.xpath('//div[@class="review-col2"]//p[6]/strong/text()').extract_first())
         aftertaste = int(response.xpath('//div[@class="review-col2"]//p[7]/strong/text()').extract_first())
         the_bottom_line = response.xpath('//div[@class="review-content"]/p[5]/text()').extract_first()
-        # try:
-        #     the_bottom_line2 = response.xpath('//div[@class="review-content"]/p[6]/text()').extract_first()
-        # except:
-        #     the_bottom_line2 = "if_additional_only"
 
-
+        # Form the container:
         item = CoffeereviewItem()
         item['review_rating'] = review_rating
         item['roaster'] = roaster
@@ -151,7 +133,6 @@ class CoffeeReviewSpider(Spider):
         item['flavor'] = flavor
         item['aftertaste'] = aftertaste
         item['the_bottom_line'] = the_bottom_line
-        # item['the_bottom_line2'] = the_bottom_line2
 
         yield item
 
