@@ -18,21 +18,15 @@ class CoffeeReviewSpider(Spider):
         # last number page number to compute the total number of pages.
         result_urls = ['https://www.coffeereview.com/advanced-search/?keyword=&search=Search+Now&pg={}'.format(x) for x in range(1,270)]
 
-        print('~'*100)
-
         print(len(result_urls))
 
-        print('~'*100)
-
         print(result_urls[0])
-
-        print('~'*100)
 
         print(result_urls[1])
 
         print('~'*100)
 
-        for url in result_urls:    # Remove this after testing !!!!!!!!!!!!!!! ################
+        for url in result_urls[:50]:    # increasing limit to test further urls
             yield Request(url=url, callback=self.parse_result_page)
 
 
@@ -46,7 +40,7 @@ class CoffeeReviewSpider(Spider):
         print('=' * 40)
 
         # Prepare list of all complete review url per page:
-        review_urls = ['https://www.coffeereview.com' + url for url in review_urls]
+        review_urls = ['https://www.coffeereview.com' + url + '/' for url in review_urls]
         print(len(review_urls))
         print('*' * 60)
 
