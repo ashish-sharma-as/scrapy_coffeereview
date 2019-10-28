@@ -16,6 +16,7 @@ class CoffeeReviewSpider(Spider):
         # click button with Scrapy functionality.
         # However, if Scrapy enabled button click (as Selenium does), I would click button using click() and obtain the 
         # last number page number to compute the total number of pages.
+        
         result_urls = ['https://www.coffeereview.com/advanced-search/?keyword=&search=Search+Now&pg={}'.format(x) for x in range(1,270)]
 
         for url in result_urls:    
@@ -27,8 +28,6 @@ class CoffeeReviewSpider(Spider):
 
         review_urls = response.xpath('//div[@class="review type-review status-publish hentry pmpro-has-access"]//h3/a/@href').extract()
         
-        # print(len(review_urls))
-        # print('=' * 40)
 
         # Prepare list of all complete review url per page:
         review_urls = ['https://www.coffeereview.com' + url + '/' for url in review_urls]
@@ -89,13 +88,12 @@ class CoffeeReviewSpider(Spider):
                 est_price_currency = 'USD'
 
         except:
-            # revert to ---> '' and -1 after testing:
-            est_price_full = 'ZZZZZZZZ'                    
-            est_price_components = 'ZZZZZZZZ'              
-            est_price = -1111                              
-            est_price_amount_per_measure = -111111         
-            est_price_units = 'ZZZZZZZZ'                   
-            est_price_currency = 'ZZZZZZZZ'                
+            est_price_full = ''                    
+            est_price_components = ''              
+            est_price = -1                              
+            est_price_amount_per_measure = -1        
+            est_price_units = ''                   
+            est_price_currency = ''                
 
 
         review_date_full = response.xpath('//div[@class="review-col2"]//p[1]/strong/text()').extract_first()
